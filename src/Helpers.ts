@@ -74,34 +74,6 @@ const BraavosProxyConstructor = (BraavosInitializer: Calldata) =>
   return address;
 }
 
-export async function getDeployedStarkentAccount(privateKey: string): Promise<StarkAccountData[]> {
-  const accountOptions = [calculateArgentxAddress(privateKey), calculateBraavosAddress(privateKey)];
-  const accounts: StarkAccountData[] = [];
-
-  for (let i = 0; i < accountOptions.length; i++) {
-    const account = new Account(provider, accountOptions[i], privateKey);
-    let tries = 3;
-    while (tries--) {
-      try {
-        await account.getNonce();
-        accounts.push({
-          type: i === 0 ? 'Argent' : 'Braavos',
-          address: account.address,
-        });
-      } catch (e: any) {
-        if (e.message === '20: Contract not found') {
-          break;
-        }
-        await sleep({ seconds: 1 });
-        continue;
-      }
-      break;
-    }
-  }
-
-  return accounts;
-}
-
 export function starkCreateSigner(privateKey: string, type: StarknetAccount): Account {
 
   const address = type === 'Argent' ? calculateArgentxAddress(privateKey) : calculateBraavosAddress(privateKey);
